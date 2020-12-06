@@ -452,3 +452,14 @@ worlds_dance<- rbind(dance_2019, dance_2018, dance_2017, dance_2016, dance_2015,
 
 write.csv(worlds_dance, 'data/worlds_dance.csv')
 
+
+# Complete Dataset --------------------------------------------------------
+
+worlds_men$Discipline <- "Men"
+worlds_ladies$Discipline <- "Ladies"
+worlds_pairs$Discipline <- "Pairs"
+worlds_dance$Discipline <- "Dance"
+
+complete_dataset <- rbind(worlds_men, worlds_ladies, worlds_pairs, worlds_dance)
+
+write.csv(complete_dataset, 'data/complete_dataset.csv')
