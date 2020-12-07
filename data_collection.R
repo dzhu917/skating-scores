@@ -463,3 +463,21 @@ worlds_dance$Discipline <- "Dance"
 complete_dataset <- rbind(worlds_men, worlds_ladies, worlds_pairs, worlds_dance)
 
 write.csv(complete_dataset, 'data/complete_dataset.csv')
+
+
+# Adding Home Column ------------------------------------------------------
+
+complete_dataset$Home <- FALSE
+# If the skater is competing in their home country, this column value will be TRUE 
+for (row in 1:nrow(complete_dataset)) {
+  host <- complete_dataset[row, "Host"]
+  nation  <- complete_dataset[row, "Nation"]
+  
+  if(host == nation) {
+    complete_dataset[row, "Home"] = TRUE
+    
+  }
+}
+
+write.csv(complete_dataset, 'data/complete_dataset.csv')
+
