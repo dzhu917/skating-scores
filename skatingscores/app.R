@@ -33,6 +33,7 @@ worlds_ladies <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == 
 worlds_pairs <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Pairs")
 worlds_dance <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Dance")
 
+# Men 
 model_men <- stan_glm(Total.Points ~ Home,
                       data = worlds_men,
                       refresh = 0)
@@ -42,7 +43,35 @@ table_men <- tbl_regression(model_men, intercept = TRUE) %>%
     tab_header(title = "Regression of Host Country",
                subtitle = "How Competing in Their Home Country Affects Mens' Scores")
 
-tidy(model_men)
+# Ladies
+model_ladies <- stan_glm(Total.Points ~ Home,
+                      data = worlds_ladies,
+                      refresh = 0)
+
+table_ladies <- tbl_regression(model_ladies, intercept = TRUE) %>%
+    as_gt() %>%
+    tab_header(title = "Regression of Host Country",
+               subtitle = "How Competing in Their Home Country Affects Ladies Scores")
+
+# Pairs
+model_pairs <- stan_glm(Total.Points ~ Home,
+                      data = worlds_pairs,
+                      refresh = 0)
+
+table_pairs <- tbl_regression(model_pairs, intercept = TRUE) %>%
+    as_gt() %>%
+    tab_header(title = "Regression of Host Country",
+               subtitle = "How Competing in Their Home Country Affects Pairs Scores")
+
+# Dance
+model_dance <- stan_glm(Total.Points ~ Home,
+                      data = worlds_dance,
+                      refresh = 0)
+
+table_dance <- tbl_regression(model_dance, intercept = TRUE) %>%
+    as_gt() %>%
+    tab_header(title = "Regression of Host Country",
+               subtitle = "How Competing in Their Home Country Affects Dance Scores")
 
 # Define a ui 
 ui <- navbarPage(
@@ -99,8 +128,33 @@ ui <- navbarPage(
                a score 21 points higher than those who are not competing in their home country."),
                
              p("We are 95% confident the true value of the total score for a male athlete competing outside of his home country lies between (214, 221),
-             and the true different in value of a male athlete competing at home is between (8.2,33). In the future, I can add year and the nation that 
-             they're in as predictors to control for changes in scoring over time and to account for the differences in the way that each nation inherently scores.")### FINISH HERE, add the latex equation in markdown
+             and the true difference in value of a male athlete competing at home is between (8.2,33). In the future, I can add year and the nation that 
+             they're in as predictors to control for changes in scoring over time and to account for the differences in the way that each nation inherently scores."),### FINISH HERE, add the latex equation in markdown
+             gt_output(outputId = "ladiesTable"),
+             h4("Discussion"),
+             p("The Intercept value of 162 refers to the average World Championships score for female skaters not competing in their home country. 
+               The Beta value for the Home variable is 22, which means that ladies competing in their home country receive, on average,
+               a score 22 points higher than those who are not competing in their home country."),
+             p("We are 95% confident the true value of the total score for a female athlete competing outside of his home country lies between (159, 166),
+             and the true difference in value of a female athlete competing at home is between (11,33)."),
+             gt_output(outputId = "pairsTable"),
+             h4("Discussion"),
+             p("The Intercept value of 176 refers to the average World Championships score for pair skaters not competing in their home country. 
+               The Beta value for the Home variable is 8.7, which means that pair skaters competing in their home country receive, on average,
+               a score 22 points higher than those who are not competing in their home country."),
+             
+             p("We are 95% confident the true value of the total score for a pairs skater competing outside of his home country lies between (172, 180),
+             and the true different in value of a male athlete competing at home is between (-4.9,23), meaning that pair skaters competing in their home country 
+             may not always have a higher score on average than those who are not."),
+             gt_output(outputId = "danceTable"),
+             h4("Discussion"),
+             p("The Intercept value of 164 refers to the average World Championships score for ice dancers not competing in their home country. 
+               The Beta value for the Home variable is 9.3, which means that ice dancers competing in their home country receive, on average,
+               a score 9.3 points higher than those who are not competing in their home country."),
+             
+             p("We are 95% confident the true value of the total score for ice dancers competing outside of their home country lies between (161, 166),
+             and the true different in value of ice dancers competing at home is between (-1.1,20). It is evident that partnered disciplines (i.e. pairs, dance)
+               experience less of a home country advantage than singles skates (i.e. mens, ladies).")
              ), ## add the other disciplines 
     
     tabPanel("About", 
@@ -172,6 +226,15 @@ server <- function(input, output, session) {
     )
     output$mensTable<-render_gt({
         expr = table_men
+    })
+    output$ladiesTable<-render_gt({
+        expr = table_ladies
+    })
+    output$pairsTable<-render_gt({
+        expr = table_pairs
+    })
+    output$danceTable<-render_gt({
+        expr = table_dance
     })
     # 
     # output$barPlot <- renderPlot({
