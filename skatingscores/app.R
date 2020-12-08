@@ -8,6 +8,9 @@ library(janitor)
 library(shinythemes)
 library(gt)
 library(gtsummary)
+library(rstanarm)
+library(broom)
+library(broom.mixed)
 
 # extra libraries
 # library(wordcloud)
@@ -15,8 +18,6 @@ library(gtsummary)
 # library(wordcloud2)
 # library(gganimate)
 # library(broom.mixed)
-# library(gtsummary)
-# library(rstanarm)
 # library(markdown)
 
 # get rid of skatingscores/ when trying to run the app, leave without for final 
@@ -26,14 +27,22 @@ pairs <- read.csv("data/worlds_pairs.csv")
 dance <- read.csv("data/worlds_dance.csv") 
 complete_dataset <- read.csv("data/complete_dataset.csv")
 
-model_men <- stan_glm(Total.Points ~ Home, 
-                      data = worlds_men, 
+# Modeling code 
+worlds_men <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Men")
+worlds_ladies <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Ladies")
+worlds_pairs <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Pairs")
+worlds_dance <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Dance")
+
+model_men <- stan_glm(Total.Points ~ Home,
+                      data = worlds_men,
                       refresh = 0)
 
-table_men <- tbl_regression(model_men, intercept = TRUE) %>% 
-    as_gt() %>% 
+table_men <- tbl_regression(model_men, intercept = TRUE) %>%
+    as_gt() %>%
     tab_header(title = "Regression of Host Country",
-               subtitle = "How Competing in Their Home Country Affects Athletes' Scores")
+               subtitle = "How Competing in Their Home Country Affects Mens' Scores")
+
+tidy(model_men)
 
 # Define a ui 
 ui <- navbarPage(
@@ -79,12 +88,20 @@ ui <- navbarPage(
              )
              
             ),
-    tabPanel("Statistical Modeling", 
+    tabPanel("Statistical Modeling",
              titlePanel("Building a Statistical Model"),
-             splitLayout(
-                 gt_output(outputId = "mensTable"),
-                 h4("Discussion") ### FINISH HERE 
-             )),
+             gt_output(outputId = "mensTable"),
+             h4("Discussion"),
+             p("This regression table was made with a Bayesian generalized linear model (stan_glm), modeling a skater's 
+               total score as the outcome and factoring in whether they were competing in their home country or not. The Intercept
+               value of 218 refers to the average World Championships score for skaters not competing in their home country. 
+               The Beta value for the Home variable is 21, which means that men competing in their home country receive, on average,
+               a score 21 points higher than those who are not competing in their home country."),
+               
+             p("We are 95% confident the true value of the total score for a male athlete competing outside of his home country lies between (214, 221),
+             and the true different in value of a male athlete competing at home is between (8.2,33). In the future, I can add year and the nation that 
+             they're in as predictors to control for changes in scoring over time and to account for the differences in the way that each nation inherently scores.")### FINISH HERE, add the latex equation in markdown
+             ), ## add the other disciplines 
     
     tabPanel("About", 
              titlePanel("About"),
@@ -156,7 +173,7 @@ server <- function(input, output, session) {
     output$mensTable<-render_gt({
         expr = table_men
     })
-    
+    # 
     # output$barPlot <- renderPlot({
     #     create.non.ranked.plot(input$yearSlide)
     # })
