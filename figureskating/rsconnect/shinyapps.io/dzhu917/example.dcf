@@ -1,0 +1,13 @@
+name: example
+title: example
+username:
+account: dzhu917
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2920935
+bundleId: 3776152
+url: https://dzhu917.shinyapps.io/example/
+when: 1603495682.86749
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: amongus.png

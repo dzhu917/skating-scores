@@ -1,4 +1,9 @@
 
+library(rstanarm)
+library(gtsummary)
+library(gt)
+library(tidyverse)
+
 # I first used lm instead of gaussian (use for posterior)
 
 worlds_men <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Men")
@@ -37,7 +42,7 @@ summary(fit_obj_1)
 
 # Now for stan_glm
 
-library(rstanarm)
+
 
 model_men <- stan_glm(Total.Points ~ Year + Nation + Host + Home, 
                        data = worlds_men, 
@@ -61,14 +66,18 @@ print(model_men)
 
 # Code to create the aesthetics of the table 
 
-library(huxtable)
-library(gt)
-library(gtsummary)
-
 model_men <- stan_glm(Total.Points ~ Home, 
                        data = worlds_men, 
                        refresh = 0)
 
+print(model_men)
+
+model_men %>% 
+  as_tibble() %>% 
+  mutate(home_intercept = `(Intercept)` + Home)
+
+
+tbl_regression(model_men)
 table_men <- tbl_regression(model_men, intercept = TRUE) %>% 
   as_gt() %>% 
   tab_header(title = "Regression of Host Country",

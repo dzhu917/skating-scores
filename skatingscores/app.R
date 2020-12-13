@@ -1,4 +1,5 @@
 #    http://shiny.rstudio.com/
+
 library(shiny)
 library(tidyverse)
 library(dplyr, warn.conflicts = FALSE)
@@ -21,6 +22,7 @@ library(broom.mixed)
 # library(markdown)
 
 # get rid of skatingscores/ when trying to run the app, leave without for final 
+
 men <- read.csv("data/worlds_men.csv") 
 ladies <- read.csv("data/worlds_ladies.csv") 
 pairs <- read.csv("data/worlds_pairs.csv") 
@@ -28,12 +30,14 @@ dance <- read.csv("data/worlds_dance.csv")
 complete_dataset <- read.csv("data/complete_dataset.csv")
 
 # Modeling code 
+
 worlds_men <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Men")
 worlds_ladies <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Ladies")
 worlds_pairs <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Pairs")
 worlds_dance <- read.csv("data/complete_dataset.csv") %>% filter(Discipline == "Dance")
 
 # Men 
+
 model_men <- stan_glm(Total.Points ~ Home,
                       data = worlds_men,
                       refresh = 0)
@@ -44,6 +48,7 @@ table_men <- tbl_regression(model_men, intercept = TRUE) %>%
                subtitle = "How Competing in Their Home Country Affects Mens' Scores")
 
 # Ladies
+
 model_ladies <- stan_glm(Total.Points ~ Home,
                       data = worlds_ladies,
                       refresh = 0)
@@ -54,6 +59,7 @@ table_ladies <- tbl_regression(model_ladies, intercept = TRUE) %>%
                subtitle = "How Competing in Their Home Country Affects Ladies Scores")
 
 # Pairs
+
 model_pairs <- stan_glm(Total.Points ~ Home,
                       data = worlds_pairs,
                       refresh = 0)
@@ -64,6 +70,7 @@ table_pairs <- tbl_regression(model_pairs, intercept = TRUE) %>%
                subtitle = "How Competing in Their Home Country Affects Pairs Scores")
 
 # Dance
+
 model_dance <- stan_glm(Total.Points ~ Home,
                       data = worlds_dance,
                       refresh = 0)
@@ -74,9 +81,9 @@ table_dance <- tbl_regression(model_dance, intercept = TRUE) %>%
                subtitle = "How Competing in Their Home Country Affects Dance Scores")
 
 # Define a ui 
+
 ui <- navbarPage(
     "Analyzing Figure Skating Scores",
-    # Add a theme 
     theme = shinytheme("flatly"),
     
     # Create a histogram of number of medals from each country over time
@@ -86,6 +93,50 @@ ui <- navbarPage(
     #              plotOutput("barPlot")),
     #          ),
     
+    tabPanel("Introduction",
+             titlePanel("A Quick Crash Course on Figure Skating"),
+             h3("The 4 Disciplines"),
+             p("There are four main disciplines or “types” of figure skating: men’s singles, ladies’ singles, pairs, 
+               and ice dance. Pair and ice dance teams are composed of one man and one woman."),
+             strong("Men's Singles"),
+             p("A discipline of figure skating where one man performs jumps, spins, and 
+               step sequences. Jumps comprise the majority of points in singles skating. Men’s singles skaters 
+               primarily compete with triple and quadruple jumps. The quadruple axel (a jump with 4.5 rotations) is 
+               the only type of quadruple jump not yet landed in competition. Because of the higher element values of 
+               quadruple jumps, it is natural for men's scores to be higher than ladies."),
+             strong("Ladies’ Singles"),
+             p("A discipline of figure skating where one woman performs jumps, spins, 
+             and step sequences. Jumps comprise the majority of points in singles skating. Ladies’ singles skaters 
+             primarily compete with triple jumps. Only a few women have attempted or successfully landed the triple 
+             axel (a jump with 3.5 rotations), and very few women have attempted or landed quadruple jumps."),
+             strong("Pairs"),
+             p("A discipline of figure skating where each team is composed of one woman and one man. 
+               Technical elements in pair skating include jumps, throw jumps, spins, step sequences, twists, death 
+               spirals, and pair lifts. Many elements of pair skating involve the man throwing or lifting the woman 
+               into the air. Unlike ice dance and similar to singles skating, pair skaters perform jumps."),
+             strong("Ice Dance"),
+             p("A discipline of figure skating where each team is composed of one woman and one man. 
+               Technical elements in ice dance include step sequences, lifts, twizzles, and dance spins. There are no 
+               jumps in ice dance. Ice dance is loosely based on ballroom dancing. The precision and quality of step 
+               sequences and basic skating is a main focus in ice dance."),
+             h3("The Scoring System"),
+             p("Each skater or team performs a short program (SP) and a free program or free skate (FP, FS), set to music. 
+               Skaters usually perform the same programs throughout a skating season. The scores from the short and free 
+               programs are added together to determine the skaters’ final scores. The skater with the highest total score wins. 
+               The two segments of an ice dance competition are called the rhythm dance (RD) (formerly short dance) and the free dance (FD). 
+               (Before the 2010-11 season, there were 3 segments: the compulsory dance, original dance, and free dance.)"),
+             h3("The World Championships"),
+             p("Only the top skaters advance to the final round and are able to compete both of their programs, so I took only 
+             the skaters who made it above the cutoff in order to have all of the scores. This means taking the top 24 after the 
+             short program for mens and ladies, top 16 for pairs skating, and top 20 for ice dancing."),
+             p("The World Championships are the most important event in the regular skating season. It first took place in 1896, 
+             but it wasn’t until 2005 that the current scoring system was used. The number of skaters/teams allowed to compete 
+             from each country (up to 3 maximum) is determined by the results of the previous season’s World Championships. Each 
+             ISU member nation automatically receives at least one spot in each discipline, provided they have a skater/team who 
+             fulfills the technical minimum scores."),
+             p("Notes: Before 2011, there were 3 dances for ice dance: Compulsory Dance, Original Dance, and Free Dance. Starting in 2011,
+             the first two programs were combined into just one, called the Short Dance. For this purpose and for consistency I designated
+             the Original Dance to be equivalent to the Short Dance.")),
     tabPanel("Historical International Scores",
              titlePanel("The World Championships Over the Years"),
 
@@ -94,13 +145,14 @@ ui <- navbarPage(
              
              sidebarLayout(
                  sidebarPanel(
-                     selectInput("discipline",label = strong("Discipline"), # FIX "name" 
+                     selectInput("discipline",label = strong("Discipline"), 
                                  choices = unique(complete_dataset$Discipline),
                                  selected = "Men",
                                  multiple = TRUE
                      )),
                  
                  # Show scores curve 
+                 
                  mainPanel(
                      plotOutput("linePlot"),
                      br(),
@@ -115,7 +167,6 @@ ui <- navbarPage(
                      represent the competitors' scores with a small amount of random variation added.")
                  )
              )
-             
             ),
     tabPanel("Statistical Modeling",
              titlePanel("Building a Statistical Model"),
@@ -155,7 +206,7 @@ ui <- navbarPage(
              p("We are 95% confident the true value of the total score for ice dancers competing outside of their home country lies between (161, 166),
              and the true different in value of ice dancers competing at home is between (-1.1,20). It is evident that partnered disciplines (i.e. pairs, dance)
                experience less of a home country advantage than singles skates (i.e. mens, ladies).")
-             ), ## add the other disciplines 
+             ), 
     
     tabPanel("About", 
              titlePanel("About"),
@@ -185,13 +236,16 @@ ui <- navbarPage(
 )
 
 # Define server logic required
+
 server <- function(input, output, session) {
     
     # necessary libraries
+    
     library(ggthemes)
     library(directlabels)
     
     # plot displaying time series of worlds scores 
+    
     subset<-reactive({complete_dataset%>% filter(Discipline %in%input$discipline)})
     
     output$linePlot <- renderPlot({
@@ -245,4 +299,5 @@ server <- function(input, output, session) {
 }
 
 # Run the application 
+
 shinyApp(ui = ui, server = server)

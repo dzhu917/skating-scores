@@ -1,0 +1,12 @@
+name: skatingscores
+title: skatingscores
+username:
+account: dzhu917
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3363945
+bundleId: 3981724
+url: https://dzhu917.shinyapps.io/skatingscores/
+when: 1607843081.62629
+asMultiple: FALSE
+asStatic: FALSE
